@@ -1,0 +1,14 @@
+#!/usr/bin/tcsh
+# For some people you will need to change the above to: #!/bin/tcsh
+
+source colors
+echo The following prints pretty colors for most people:
+echo "$red"red"$yellow" yellow"$green" green"$blue" blue"$purple" purple"$cyan" cyan"$white" white"$black" black"$gray" gray"$orange" orange"$pink" pink"$lightgreen" lightgreen
+echo "$lightblue"lightblue"$lightcyan" lightcyan"$lightpurple" lightpurple"$lightyellow" lightyellow"$lightgray" lightgray"$brightwhite" brightwhite"$darkblue" darkblue
+echo "$darkcyan"darkcyan"$darkred" darkred"$darkgreen" darkgreen"$darkgray" darkgray"$darkpurple" darkpurple"$darkmagenta" darkmagenta"$reset" reset
+echo
+echo But, if the above did not print pretty colors, you may find this will:
+alias eco '(printf "%b " \!:*)|rev|cut -c2-|rev'
+eco "$red"red"$yellow" yellow"$green" green"$blue" blue"$purple" purple"$cyan" cyan"$white" white"$black" black"$gray" gray"$orange" orange"$pink" pink"$lightgreen" lightgreen
+eco "$lightblue"lightblue"$lightcyan" lightcyan"$lightpurple" lightpurple"$lightyellow" lightyellow"$lightgray" lightgray"$brightwhite" brightwhite"$darkblue" darkblue
+eco "$darkcyan"darkcyan"$darkred" darkred"$darkgreen" darkgreen"$darkgray" darkgray"$darkpurple" darkpurple"$darkmagenta" darkmagenta"$reset" reset

@@ -1,0 +1,139 @@
+#!/usr/bin/tcsh
+source colors
+
+# If colors aren't printing, try uncommenting this line:
+# set Macintosh
+
+#The following lines are the same as colorechousingswitch (and are explained there):
+if ( $?Macintosh ) then
+    alias eco '(printf "%b " \!:*)|rev|cut -c2-|rev'
+    echo -n eco\  > echoline
+else
+    echo -n echo\  > echoline
+endif
+
+#設定迴圈的index
+set index=1
+
+#argv是輸入傳遞的數組，而arg是目前迭代的參數
+foreach arg ( $argv )
+    set position=$index
+    if ( "$arg" == "-" ) then
+        #將-輸出，且不添加換行符號
+        #echoline是做為暫存的文件
+        echo -n - >> echoline
+
+    else if ( "$arg" == "-n" ) then
+        #用括號包起來，會分別執行兩個命令
+        ( echo -n -;echo n ) >> echoline
+
+    #arg不等於以-(roygbpcmwy)開頭且不是--開頭
+    else if ( "$arg" !~ "-[roygbpcmw]*" && "$arg" !~ "--*" ) then
+        #輸出其本身
+        echo -n "$arg" >> echoline
+    
+    else
+        #把-的符號用tr -d去除
+        #echo "arg is: $arg"
+        set newarg=`echo "$arg" | tr -d '-'`
+        #echo "newarg is: $newarg"
+
+        # The next few lines of code (as many lines as you need) will define
+        # a variable named adjective, which will have a value of either "light"
+        # or "bright" or "dark", accordingly.
+
+        #定義顏色的亮暗
+        #考慮參數是以lbd接brycgmopw的情況
+        if ( "$newarg" =~ "[lbd][brycgmopw]*" && "$newarg" !~ "bro*" && "$newarg" !~ "bri*" ) then
+            if ( "$newarg" =~ "l*" ) then
+                set adjective="light"
+            else if ( "$newarg" =~ "b*" ) then
+                set adjective="bright"
+            else if ( "$newarg" =~ "d*" ) then
+                set adjective="dark"
+            endif
+
+            #創建參數的array
+            set arg_array=( `echo "$newarg" | grep -o .` )
+
+            #將adjective與參數結合，但不能加上參數第一個元素，所以從第二個元素到倒數第一個元素，最後是去除array中的空格
+            set adj_arg="$adjective"`echo "$arg_array[2-]" | tr -d ' '`
+            set newarg="$adj_arg"
+            #echo "adj_arg is: $newarg"
+        endif
+
+        #The following section tests if the final letter of the argument is a color
+        #abreviation (eg r for red, b for blue, y for yellow, etc.)
+        #So there will be a line for each letter:
+        
+        # 確認最後一個字元是否是顏色，將結尾是顏色[roygbpcmw]的補上後面的字元
+        if ( "$newarg" =~ "*r" ) then
+            set newarg = `echo -n $newarg; echo "ed"`
+
+        else if ( "$newarg" =~ "*o" ) then
+            set newarg = `echo -n $newarg; echo "range"`
+
+        else if ( "$newarg" =~ "*y" && "$newarg" !~ "*gray" && "$newarg" !~ "*grey" ) then
+            set newarg = `echo -n $newarg; echo "ellow"`
+
+        else if ( "$newarg" =~ "*g" ) then
+            set newarg = `echo -n $newarg; echo "reen"`
+
+        else if ( "$newarg" =~ "*b" ) then
+            set newarg = `echo -n $newarg; echo "lue"`
+
+        else if ( "$newarg" =~ "*p" ) then
+            set newarg = `echo -n $newarg; echo "urple"`
+
+        else if ( "$newarg" =~ "*c" ) then
+            set newarg = `echo -n $newarg; echo "yan"`
+
+        else if ( "$newarg" =~ "*m" ) then
+            set newarg = `echo -n $newarg; echo "agenta"`
+
+        else if ( "$newarg" =~ "*w" && "$newarg" !~ "*yellow" ) then
+            set newarg = `echo -n $newarg; echo "hite"`
+        endif
+
+        #The following section addresses a few synonyms:
+
+        #同義詞轉換
+        if ( "$newarg" == "lightwhite" ) then
+            set newarg="white"
+        endif
+
+        if ( "$newarg" =~ "*grey" ) then
+            set newarg = `echo "$newarg" | tr e a`
+	    endif
+
+        #使用cut -f，並用m做為分隔符號，取出第一段的文字，並將其與purple接在一起
+        if ( "$newarg" =~ "*magenta" ) then
+            set newarg = `echo "$newarg" | cut -f1 -d m `"purple"
+	    endif
+
+        #echo "final_newarg is: $newarg"
+
+        #傳送$與參數名稱
+        echo -n '"$'$newarg'"' >> echoline
+
+        continue
+    endif
+    
+    #The following ________ checks that this is not the final command line argument,
+    #because we want to put a " " between arguments, but not after the last one.
+    #Note: this is an improvement over how colorechousingswitch worked.
+
+    #在參數之間放一個空格，但是最後一個參數後不放空格
+    #透過$#argv獲得輸入了幾個參數
+    #比對$position與數組大小是否相等，不相等就添加空格，否則不添加
+    if ( "$position" != "$#argv" ) then
+        echo -n " " >> echoline
+    endif
+
+    @ index++
+end 
+
+#The following lines are the same as colorechousingswitch (and are explained there):
+source echoline
+cat echoline | cut -d\  --complement -f1    >> colorechoout; rm -f echoline
+echo -n "$reset"
