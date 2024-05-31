@@ -1,0 +1,8 @@
+hello
+aaabbbcc
+aac
+abba
+aba
+aaa
+a bbb c
+a BBB c
